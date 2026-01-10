@@ -30,7 +30,7 @@ separately under the following terms:
 
 SceneGraphManager v2.0.0 (kudos-scene-graph-manager):
   - Private library, NOT available as a public npm package
-  - Free for use within the kudosflow project only
-  - Commercial use outside of kudosflow requires a separate license
+  - Free for use within the kudosflow2 project only
+  - Commercial use outside of kudosflow2 requires a separate license
   - For licensing inquiries, contact: Akira Kudo (https://www.linkedin.com/in/akira-kudo-4b04163/)
   - © 2026 Akira Kudo. All rights reserved.
