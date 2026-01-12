@@ -1,6 +1,6 @@
 # Open Agent JSON
 
-A declarative JSON format for building AI agent workflows with LangGraph.js through meta-programming.
+Visual, production-ready AI workflows — portable as JSON
 
 ## Overview
 

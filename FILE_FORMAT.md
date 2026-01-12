@@ -1,5 +1,7 @@
 # Open Agent JSON File Format Specification
 
+> Visual, production-ready AI workflows — portable as JSON
+
 ## Overview
 
 Open Agent JSON is a declarative JSON format for defining AI agent workflows powered by LangGraph.js. It enables meta-programming of complex agent systems through configuration rather than code, supporting multi-agent orchestration, model integration, and interactive workflows.
