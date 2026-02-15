@@ -72,7 +72,7 @@ Global configuration for the workflow execution environment.
 - **eventEmitter**: EventEmitter configuration
   - **defaultMaxListeners**: Max concurrent event listeners (default: 10)
 
-- **skills** (optional): FilesystemBackend skills integration configuration
+- **skills** (optional): Skills integration configuration
   - **enabled**: Enable skills support (default: false)
   - **skillsPath**: Relative path to skills directory (e.g., "skills")
   - **backend**: Filesystem backend configuration
@@ -245,7 +245,7 @@ Defines LLM models used by workflow nodes.
 - **systemPrompt** (optional): Default system message
 - **bindA2AServers** (optional): Enable Agent-to-Agent (A2A) tool binding
 - **bindMcpServers** (optional): Enable MCP server tool binding
-- **bindSystemSkills** (optional): Enable FilesystemBackend skills tool binding
+- **bindSystemSkills** (optional): Enable skills tool binding
 
 ### Example
 
@@ -370,7 +370,7 @@ Special node for handling tool calls (A2A/MCP/Skills).
 - **type**: Must be `"ToolNode"`
 - **useA2AServers**: Enable A2A server tools
 - **useMcpServers**: Enable MCP server tools
-- **useSystemSkills**: Enable FilesystemBackend skills tools
+- **useSystemSkills**: Enable skills tools
 
 ### Special Functions
 
@@ -766,9 +766,9 @@ Open Agent JSON supports multi-agent orchestration where agents communicate via 
 
 See [kudosflow](https://github.com/akudo7/kudosflow) and [a2a-server](https://github.com/akudo7/a2a-server) for examples.
 
-### FilesystemBackend Skills Integration
+### Skills Integration
 
-Open Agent JSON supports FilesystemBackend skills that provide file system operations through a virtual or real filesystem backend. Skills come in two types: **System Skills** (built-in) and **Custom Skills** (user-defined).
+Open Agent JSON supports skills that provide file system operations through a virtual or real filesystem backend. Skills come in two types: **System Skills** (built-in) and **Custom Skills** (user-defined).
 
 **Configuration:**
 
@@ -789,7 +789,7 @@ Open Agent JSON supports FilesystemBackend skills that provide file system opera
 
 #### System Skills (Built-in)
 
-SceneGraphManager provides the following 7 core built-in skills through FilesystemBackend:
+SceneGraphManager provides the following 7 core built-in skills:
 
 | Skill Name | Description | Key Features |
 | ------------ | ------------- | ---------- |

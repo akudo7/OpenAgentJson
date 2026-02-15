@@ -10,7 +10,7 @@ Open Agent JSON enables you to define complex multi-agent systems and LLM-powere
 - LLM model integration (OpenAI, Anthropic, Ollama)
 - Agent-to-Agent (A2A) communication
 - Model Context Protocol (MCP) server integration
-- FilesystemBackend skills integration (System and Custom Skills)
+- Skills integration (System and Custom Skills)
 - Interactive workflows with user interrupts
 - Conditional routing and state management
 
@@ -20,7 +20,7 @@ Open Agent JSON enables you to define complex multi-agent systems and LLM-powere
 - **Multi-Model Support**: Seamlessly integrate OpenAI, Anthropic, and Ollama models
 - **A2A Protocol**: Enable agent-to-agent communication for complex multi-agent systems
 - **MCP Integration**: Connect external tools via Model Context Protocol servers
-- **Skills Integration (System and Custom Skills)**: FilesystemBackend skills support for file system operations
+- **Skills Integration (System and Custom Skills)**: Skills support for file system operations
 - **State Management**: Flexible state annotations with custom reducers
 - **Interactive Flows**: Built-in support for user interrupts and approval gates
 
