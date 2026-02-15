@@ -43,6 +43,17 @@ Global configuration for the workflow execution environment.
     "recursionLimit": number,
     "eventEmitter": {
       "defaultMaxListeners": number
+    },
+    "skills": {
+      "enabled": boolean,
+      "skillsPath": string,
+      "backend": {
+        "virtualMode": boolean,
+        "rootDir": string
+      }
+    },
+    "store": {
+      "type": "InMemoryStore"
     }
   }
 }
@@ -61,6 +72,16 @@ Global configuration for the workflow execution environment.
 - **eventEmitter**: EventEmitter configuration
   - **defaultMaxListeners**: Max concurrent event listeners (default: 10)
 
+- **skills** (optional): FilesystemBackend skills integration configuration
+  - **enabled**: Enable skills support (default: false)
+  - **skillsPath**: Relative path to skills directory (e.g., "skills")
+  - **backend**: Filesystem backend configuration
+    - **virtualMode**: Enable virtual filesystem mode (default: true)
+    - **rootDir**: Root directory for filesystem operations (default: ".")
+
+- **store** (optional): Key-value store configuration
+  - **type**: Store implementation (`"InMemoryStore"`)
+
 ### Example
 
 ```json
@@ -75,6 +96,17 @@ Global configuration for the workflow execution environment.
     "recursionLimit": 25,
     "eventEmitter": {
       "defaultMaxListeners": 10
+    },
+    "skills": {
+      "enabled": true,
+      "skillsPath": "skills",
+      "backend": {
+        "virtualMode": true,
+        "rootDir": "."
+      }
+    },
+    "store": {
+      "type": "InMemoryStore"
     }
   }
 }
@@ -194,7 +226,8 @@ Defines LLM models used by workflow nodes.
       },
       "systemPrompt": string,
       "bindA2AServers": boolean,
-      "bindMcpServers": boolean
+      "bindMcpServers": boolean,
+      "bindSystemSkills": boolean
     }
   ]
 }
@@ -212,6 +245,7 @@ Defines LLM models used by workflow nodes.
 - **systemPrompt** (optional): Default system message
 - **bindA2AServers** (optional): Enable Agent-to-Agent (A2A) tool binding
 - **bindMcpServers** (optional): Enable MCP server tool binding
+- **bindSystemSkills** (optional): Enable FilesystemBackend skills tool binding
 
 ### Example
 
@@ -304,7 +338,8 @@ Defines executable workflow nodes (states in the graph).
         "function": string
       },
       "useA2AServers": boolean,
-      "useMcpServers": boolean
+      "useMcpServers": boolean,
+      "useSystemSkills": boolean
     }
   ]
 }
@@ -328,13 +363,14 @@ Standard node executing custom JavaScript logic.
 
 #### Tool Node
 
-Special node for handling tool calls (A2A/MCP).
+Special node for handling tool calls (A2A/MCP/Skills).
 
 **Fields:**
 - **id**: Unique node identifier
 - **type**: Must be `"ToolNode"`
 - **useA2AServers**: Enable A2A server tools
 - **useMcpServers**: Enable MCP server tools
+- **useSystemSkills**: Enable FilesystemBackend skills tools
 
 ### Special Functions
 
@@ -389,7 +425,8 @@ Special node for handling tool calls (A2A/MCP).
 {
   "id": "tools",
   "type": "ToolNode",
-  "useA2AServers": true
+  "useA2AServers": true,
+  "useSystemSkills": true
 }
 ```
 
@@ -728,6 +765,182 @@ Open Agent JSON supports multi-agent orchestration where agents communicate via 
 - Returns structured responses
 
 See [kudosflow](https://github.com/akudo7/kudosflow) and [a2a-server](https://github.com/akudo7/a2a-server) for examples.
+
+### FilesystemBackend Skills Integration
+
+Open Agent JSON supports FilesystemBackend skills that provide file system operations through a virtual or real filesystem backend. Skills come in two types: **System Skills** (built-in) and **Custom Skills** (user-defined).
+
+**Configuration:**
+
+- Enable skills in `config.skills` with `enabled: true`
+- Set `skillsPath` to the directory containing skill definitions
+- Configure `backend.virtualMode` for virtual filesystem simulation
+- Set `backend.rootDir` for the root directory of filesystem operations
+
+**Model Integration:**
+
+- Use `"bindSystemSkills": true` in model config to bind skills as tools
+- Skills are automatically available to the model as callable tools
+
+**Tool Node Integration:**
+
+- Use `"useSystemSkills": true` in ToolNode to handle skill tool calls
+- Skills execute filesystem operations and return results to the workflow
+
+#### System Skills (Built-in)
+
+SceneGraphManager provides the following 7 core built-in skills through FilesystemBackend:
+
+| Skill Name | Description | Key Features |
+| ------------ | ------------- | ---------- |
+| `read_file` | Read file contents from the filesystem | Supports offset/limit for large files, line-by-line reading |
+| `write_file` | Write content to a file | Overwrite protection, creates parent directories |
+| `edit_file` | String replacement in files | Uniqueness validation, replace_all option |
+| `glob_files` | Pattern-based file search | Supports glob patterns (e.g., `**/*.ts`), recursive search |
+| `grep_search` | Content search with regex support | Regex patterns, context lines (-A/-B/-C), file filtering |
+| `bash_command` | Shell command execution | Safety checks, timeout support, environment variables |
+| `web_fetch` | HTTP content fetching | GET/POST requests, header support, JSON/text responses |
+
+**Tool Details:**
+
+1. **read_file**
+   - Read file contents with optional offset and limit
+   - Supports reading specific line ranges for large files
+   - Returns content with line numbers for easy navigation
+   - Example: `read_file({ file_path: "config.json", offset: 0, limit: 100 })`
+
+2. **write_file**
+   - Write or overwrite file contents
+   - Automatically creates parent directories if needed
+   - Includes overwrite protection for existing files
+   - Example: `write_file({ file_path: "output.txt", content: "data" })`
+
+3. **edit_file**
+   - Perform exact string replacement in files
+   - Validates uniqueness to prevent unintended replacements
+   - Supports `replace_all` option for multiple occurrences
+   - Example: `edit_file({ file_path: "app.ts", old_string: "old", new_string: "new" })`
+
+4. **glob_files**
+   - Search for files using glob patterns
+   - Supports recursive patterns like `**/*.ts` or `src/**/*.json`
+   - Returns sorted list of matching file paths
+   - Example: `glob_files({ pattern: "**/*.md", path: "." })`
+
+5. **grep_search**
+   - Search file contents using regex patterns
+   - Supports context lines (-A, -B, -C) and case-insensitive search
+   - Filter by file type or glob pattern
+   - Example: `grep_search({ pattern: "function.*test", glob: "**/*.ts" })`
+
+6. **bash_command**
+   - Execute shell commands with safety checks
+   - Supports timeout configuration and environment variables
+   - Captures stdout and stderr output
+   - Example: `bash_command({ command: "npm test", timeout: 30000 })`
+
+7. **web_fetch**
+   - Fetch content from HTTP/HTTPS URLs
+   - Supports custom headers and POST data
+   - Returns JSON or text responses
+   - Example: `web_fetch({ url: "https://api.example.com/data", method: "GET" })`
+
+#### Custom Skills
+
+Custom skills extend functionality beyond filesystem operations. They are defined in the `skillsPath` directory with the following structure:
+
+**Directory Structure:**
+
+```text
+skills/
+├── skill-name/
+│   ├── SKILL.md          # Skill metadata and instructions
+│   └── implementation.ts # Skill implementation (optional)
+```
+
+**SKILL.md Format:**
+
+```markdown
+---
+name: skill-name
+description: Brief description of what the skill does
+---
+
+# Skill Title
+
+## Overview
+Detailed description of the skill's purpose and capabilities.
+
+## Instructions
+Step-by-step instructions for the AI agent to use this skill.
+
+## Examples
+Usage examples with expected inputs and outputs.
+```
+
+**Custom Skill Examples:**
+
+For example implementations, see the [kudosflow](https://github.com/akudo7/kudosflow) repository:
+
+- **arxiv-search**: Search arXiv preprint repository for research papers
+- **langgraph-docs**: Fetch and use LangGraph.js documentation
+
+**Example Configuration:**
+
+```json
+{
+  "config": {
+    "skills": {
+      "enabled": true,
+      "skillsPath": "skills",
+      "backend": {
+        "virtualMode": true,
+        "rootDir": "."
+      }
+    },
+    "store": {
+      "type": "InMemoryStore"
+    }
+  },
+  "models": [
+    {
+      "id": "skillsModel",
+      "type": "openai",
+      "config": {
+        "model": "gpt-5.2",
+        "temperature": 0.7
+      },
+      "bindSystemSkills": true,
+      "systemPrompt": "You are an assistant with filesystem access and custom skills."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "agent",
+      "handler": {
+        "parameters": [
+          {
+            "name": "state",
+            "parameterType": "state",
+            "stateType": "typeof StateAnnotation.State"
+          },
+          {
+            "name": "model",
+            "parameterType": "model",
+            "modelRef": "skillsModel"
+          }
+        ],
+        "function": "const messages = state.messages;\nconst response = await model.invoke(messages);\nreturn { messages: [response] };"
+      }
+    },
+    {
+      "id": "tools",
+      "type": "ToolNode",
+      "useSystemSkills": true
+    }
+  ]
+}
+```
 
 ---
 
