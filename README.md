@@ -84,6 +84,7 @@ The documentation covers:
 - Edge types (Normal, Conditional)
 - State management patterns
 - A2A and MCP integration
+- Skills integration (System Skills and Custom Skills)
 - Working examples and best practices
 
 ## Examples
