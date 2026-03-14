@@ -340,7 +340,8 @@ Defines executable workflow nodes (states in the graph).
       "useA2AServers": boolean,
       "useMcpServers": boolean,
       "useSystemSkills": boolean,
-      "excludeTools": string[]
+      "excludeTools": string[],
+      "injectSkillsPrompt": boolean
     }
   ]
 }
@@ -361,6 +362,7 @@ Standard node executing custom JavaScript logic.
     - **stateType**: State annotation type (for state params)
     - **modelRef**: Model ID reference (for model params)
   - **function**: JavaScript function body as string
+- **injectSkillsPrompt** (optional): Set to `false` to skip Skills prompt injection for this node (default: `true`)
 
 #### Tool Node
 
