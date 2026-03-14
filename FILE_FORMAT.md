@@ -339,7 +339,8 @@ Defines executable workflow nodes (states in the graph).
       },
       "useA2AServers": boolean,
       "useMcpServers": boolean,
-      "useSystemSkills": boolean
+      "useSystemSkills": boolean,
+      "excludeTools": string[]
     }
   ]
 }
@@ -371,6 +372,7 @@ Special node for handling tool calls (A2A/MCP/Skills).
 - **useA2AServers**: Enable A2A server tools
 - **useMcpServers**: Enable MCP server tools
 - **useSystemSkills**: Enable skills tools
+- **excludeTools** (optional): Array of tool names to exclude from this node
 
 ### Special Functions
 
@@ -449,10 +451,9 @@ Defines workflow transitions between nodes.
         "name": string,
         "handler": {
           "parameters": [ ],
-          "output": string,
           "function": string
         },
-        "possibleTargets": string[]
+        "possibleTargets": string[]   // optional
       }
     }
   ]
@@ -480,9 +481,8 @@ Dynamic routing based on runtime logic.
   - **name**: Condition identifier
   - **handler**: Evaluation logic
     - **parameters**: Parameter definitions (same as node parameters)
-    - **output**: Return type (`"string"` for target node ID)
     - **function**: JavaScript function body
-  - **possibleTargets**: Array of possible target node IDs
+  - **possibleTargets** (optional): Array of possible target node IDs for validation
 
 ### Examples
 
@@ -511,7 +511,6 @@ Dynamic routing based on runtime logic.
           "stateType": "typeof AgentState.State"
         }
       ],
-      "output": "string",
       "function": "if (state.currentPhase === 'research') return 'researchNode';\nreturn 'evaluationNode';"
     },
     "possibleTargets": ["researchNode", "evaluationNode"]
@@ -961,4 +960,4 @@ For example implementations, see the [kudosflow](https://github.com/akudo7/kudos
 - [a2a-server Implementation](https://github.com/akudo7/a2a-server)
 - [LangGraph.js Documentation](https://langchain-ai.github.io/langgraphjs/)
 
-**Note:** This specification is based on the SceneGraphManager v2.0.0 library (kudos-scene-graph-manager), which is a private component. For licensing and access inquiries, please contact Akira Kudo.
+**Note:** This specification is based on the SceneGraphManager v2.1.2 library (kudos-scene-graph-manager), which is a private component. For licensing and access inquiries, please contact Akira Kudo.
