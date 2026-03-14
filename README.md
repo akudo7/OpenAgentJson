@@ -99,14 +99,14 @@ Explore real-world implementations:
 
 This specification is powered by:
 - **LangGraph.js**: Workflow orchestration framework
-- **SceneGraphManager v2.0.0**: Private library for JSON-to-workflow compilation
+- **SceneGraphManager v2.1.2**: Private library for JSON-to-workflow compilation
 - **LangChain**: LLM integration and tooling
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-**Note:** This specification references the SceneGraphManager v2.0.0 library (kudos-scene-graph-manager), which is a private component. For licensing and access inquiries, please contact [Akira Kudo](https://www.linkedin.com/in/akira-kudo-4b04163/).
+**Note:** This specification references the SceneGraphManager v2.1.2 library (kudos-scene-graph-manager), which is a private component. For licensing and access inquiries, please contact [Akira Kudo](https://www.linkedin.com/in/akira-kudo-4b04163/).
 
 ## Contributing
 
